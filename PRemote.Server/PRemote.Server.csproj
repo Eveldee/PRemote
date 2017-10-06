@@ -9,4 +9,14 @@
     <PackageReference Include="MessagePack" Version="1.6.1.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\PRemote.Shared\PRemote.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="GPhotoSharp">
+      <HintPath>..\..\..\..\..\Desktop\Logiciels\Coding\Visual Studio\C#\Library\GPhotoSharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
