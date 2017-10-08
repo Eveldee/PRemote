@@ -19,7 +19,7 @@ namespace PRemote.Shared
     {
         // Setting Type
         [Key(0)]
-        public PDataType Settingtype { get; }
+        public PDataType SettingType { get; }
 
         // Data
         [Key(1)]
@@ -28,8 +28,13 @@ namespace PRemote.Shared
         // Constructor
         public PPacket(PDataType settingType, object data)
         {
-            Settingtype = settingType;
+            SettingType = settingType;
             Data = data;
+        }
+
+        public override string ToString()
+        {
+            return SettingType.ToString() + "=" + Data.ToString();
         }
     }
 

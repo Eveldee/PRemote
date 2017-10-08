@@ -11,7 +11,7 @@ namespace PRemote.Server.Extensions
 {
     public static class Extensions //! Main extensions class
     {
-        //? Extensions get Capabilities easier
+        //? Extensions to get Capabilities easier
         public static async Task<CameraCapabilities> GetCameraCapabilities(this Camera camera)
         {
             return new CameraCapabilities(camera.Name, await camera.GetBatteryLevelAsync(), camera.CanBeConfigured, camera.CanCapturePreviews,

@@ -84,8 +84,10 @@ namespace PRemote.Server
 
         static void ConnectionThread() //? Wait TCP connection from a client
         {
-            TcpListener tcpListener = new TcpListener(IPAddress.Any, PConnection.TCPPort);
+            IPEndPoint iP = new IPEndPoint(IPAddress.Any, PConnection.TCPPort);
+            TcpListener tcpListener = new TcpListener(iP);
             tcpListener.Start();
+            Console.WriteLine("[TCP Thread]Listening on " + iP.ToString());
 
             while (IsStarted)
             {
@@ -152,6 +154,7 @@ namespace PRemote.Server
                     }
 
                     PPacket packet = MessagePackSerializer.Deserialize<PPacket>(packetStream);
+                    Console.WriteLine("Packet: " + packet.ToString());
                     await SetSetting(packet);
                 }
                 catch (Exception e)
@@ -166,7 +169,7 @@ namespace PRemote.Server
             //? Read a setting from a packet and try to set it
             try
             {
-                switch (packet.Settingtype)
+                switch (packet.SettingType)
                 {
                     case PDataType.Aperture:
                         foreach (Camera camera in CameraList)

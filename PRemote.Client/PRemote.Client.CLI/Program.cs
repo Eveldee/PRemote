@@ -40,13 +40,14 @@ namespace PRemote.Client.CLI
             {
                 header = udpClient.Receive(ref ServerIP);
 
-                if (header == PConnection.UDPPacketData)
+                if (header.SequenceEqual(PConnection.UDPPacketData))
                     break;
             }
 
             Console.WriteLine("Found server on " + ServerIP.ToString());
 
-            tcpClient = new TcpClient(ServerIP);
+            tcpClient = new TcpClient(ServerIP.Address.ToString(), PConnection.TCPPort);
+            Console.WriteLine("Connected to " + tcpClient.Client.RemoteEndPoint.ToString());
             networkStream = tcpClient.GetStream();
 
             Thread transferThread = new Thread(TransferThread);
