@@ -85,6 +85,7 @@ namespace PRemote.Server
         static void ConnectionThread() //? Wait TCP connection from a client
         {
             TcpListener tcpListener = new TcpListener(IPAddress.Any, PConnection.TCPPort);
+            tcpListener.Start();
 
             while (IsStarted)
             {
