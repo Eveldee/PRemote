@@ -104,6 +104,24 @@ namespace PRemote.Client.CLI
                         pDataType = PDataType.ShutterSpeed;
                         value = arg;
                         break;
+                    default:
+                        continue;
+                }
+
+                MessagePackSerializer.Serialize(data, new PPacket(pDataType, value));
+                long dataLenght = data.Length;
+
+                networkStream.Write(BitConverter.GetBytes(dataLenght), 0, 8);
+
+                while (data.Position < dataLenght)
+                {
+                    //? Get left bytes to send
+                    int leftBytes = (int)(lenght - data.Position);
+                    if (leftBytes > PConnection.BufferSize)
+                        leftBytes = PConnection.BufferSize;
+
+                    data.Read(buffer, 0, leftBytes);
+                    networkStream.Write(buffer, 0, leftBytes);
                 }
             }
         }
