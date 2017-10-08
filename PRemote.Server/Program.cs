@@ -119,6 +119,7 @@ namespace PRemote.Server
 
             TcpClient client = (TcpClient)obj;
             NetworkStream networkStream = client.GetStream();
+            MemoryStream packetStream = new MemoryStream();
             byte[] buffer = new byte[PConnection.BufferSize];
 
             while (IsStarted)
@@ -128,11 +129,16 @@ namespace PRemote.Server
                     // Read lenght
                     networkStream.Read(buffer, 0, 4);
                     int lenght = BitConverter.ToInt32(buffer, 0);
+                    int read = 0;
 
                     // Read data
-                    networkStream.Read(buffer, 0, lenght);
+                    while (packetStream.Length < lenght)
+                    {
+                        read = networkStream.Read(buffer, 0, buffer.Length);
+                        packetStream.Write(buffer, 0, read);
+                    }
 
-                    PPacket packet = MessagePackSerializer.Deserialize<PPacket>(buffer);
+                    PPacket packet = MessagePackSerializer.Deserialize<PPacket>(packetStream);
                     await SetSetting(packet);
                 }
                 catch (Exception e)
