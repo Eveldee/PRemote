@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PRemote.Shared.Extensions
 {
-    static class CollectionExtensions //? Extensions for Collections types
+    public static class CollectionExtensions //? Extensions for Collections types
     {
         /// <summary>
         /// Return a subpart of an <see cref="Array"/> by index

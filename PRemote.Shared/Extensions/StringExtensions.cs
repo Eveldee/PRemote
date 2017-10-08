@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PRemote.Shared.Extensions
 {
-    static class StringExtensions //? String Extensions
+    public static class StringExtensions //? String Extensions
     {
         /// <summary>
         /// Check if a <see cref="string"/> is Null or Empty (" " / "" / null)

@@ -96,11 +96,14 @@ namespace PRemote.Server
 
                 // Send capabilities to Client
                 Stream stream = new MemoryStream();
-                MessagePackSerializer.Serialize(stream, new PPacket(PDataType.Configuration, (CameraList.First().GetCameraCapabilities())));
+                MessagePackSerializer.Serialize(stream, new PPacket(PDataType.Configuration, (CameraList[0].GetCameraCapabilities())));
                 long lenght = stream.Length;
                 byte[] buffer = new byte[PConnection.BufferSize];
 
                 int sent = 0;
+                // Send size to client
+                client.GetStream().Write(BitConverter.GetBytes(lenght), 0, 8);
+                // Send bytes
                 while (sent <= lenght)
                 {
                     stream.Read(buffer, 0, buffer.Length);
@@ -108,6 +111,7 @@ namespace PRemote.Server
                 }
                 stream.Close();
 
+                // Start Transfer Thread
                 Thread dataThread = new Thread(TransferThread);
                 dataThread.Start(client);
             }
@@ -169,7 +173,7 @@ namespace PRemote.Server
                         break;
                     case PDataType.ShutterSpeed:
                         foreach (Camera camera in CameraList)
-                            await camera.SetShutterSpeedAsync(new ShutterSpeed(packet.Data.ToString()));
+                            await camera.SetShutterSpeedAsync(new ShutterSpeed((string)packet.Data));
                         break;
                 }
             }
