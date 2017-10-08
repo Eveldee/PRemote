@@ -53,7 +53,7 @@ namespace PRemote.Client.CLI
             transferThread.Start();
         }
 
-        static async void TransferThread()
+        static void TransferThread()
         {
             byte[] buffer = new byte[PConnection.BufferSize];
 

@@ -1,27 +1,19 @@
-﻿using System;
-
-using Android.App;
-using Android.Content.PM;
-using Android.Runtime;
-using Android.Views;
+﻿using Android.App;
 using Android.Widget;
 using Android.OS;
 
-namespace PRemote.Client.Droid
+namespace PRemote.Client.Android
 {
-	[Activity (Label = "PRemote.Client", Icon = "@drawable/icon", Theme="@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
-	public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
-	{
-		protected override void OnCreate (Bundle bundle)
-		{
-			TabLayoutResource = Resource.Layout.Tabbar;
-			ToolbarResource = Resource.Layout.Toolbar;
+    [Activity(Label = "PRemote.Client.Android", MainLauncher = true)]
+    public class MainActivity : Activity
+    {
+        protected override void OnCreate(Bundle savedInstanceState)
+        {
+            base.OnCreate(savedInstanceState);
 
-			base.OnCreate (bundle);
-
-			global::Xamarin.Forms.Forms.Init (this, bundle);
-			LoadApplication (new PRemote.Client.App ());
-		}
-	}
+            // Set our view from the "main" layout resource
+            SetContentView(Resource.Layout.Main);
+        }
+    }
 }
 
