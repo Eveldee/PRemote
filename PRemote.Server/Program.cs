@@ -100,14 +100,22 @@ namespace PRemote.Server
                 long lenght = stream.Length;
                 byte[] buffer = new byte[PConnection.BufferSize];
 
-                int sent = 0;
-                // Send size to client
-                client.GetStream().Write(BitConverter.GetBytes(lenght), 0, 8);
-                // Send bytes
-                while (sent <= lenght)
+                using (NetworkStream networkStream = client.GetStream())
                 {
-                    stream.Read(buffer, 0, buffer.Length);
-                    client.GetStream().Write(buffer, 0, buffer.Length);
+                    // Send size to client
+                    networkStream.Write(BitConverter.GetBytes(lenght), 0, 8);
+
+                    // Send bytes
+                    while (stream.Position <= lenght)
+                    {
+                        //? Get left bytes to send
+                        int leftBytes = (int)(lenght - stream.Position);
+                        if (leftBytes > PConnection.BufferSize)
+                            leftBytes = PConnection.BufferSize;
+
+                        stream.Read(buffer, 0, leftBytes);
+                        networkStream.Write(buffer, 0, leftBytes);
+                    }
                 }
                 stream.Close();
 
@@ -131,8 +139,8 @@ namespace PRemote.Server
                 try
                 {
                     // Read lenght
-                    networkStream.Read(buffer, 0, 4);
-                    int lenght = BitConverter.ToInt32(buffer, 0);
+                    networkStream.Read(buffer, 0, 8);
+                    long lenght = BitConverter.ToInt32(buffer, 0);
                     int read = 0;
 
                     // Read data
