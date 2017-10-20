@@ -21,17 +21,17 @@ namespace PRemote.Shared
         [IgnoreMember]
         public bool CanSetAperture
         {
-            get => SupportedApertures.Count() > 0 ? true : false;
+            get { return SupportedApertures.Count() > 0 ? true : false; }
         }
         [IgnoreMember]
         public bool CanSetIsoSpeed
         {
-            get => SupportedIsoSpeeds.Count() > 0 ? true : false;
+            get { return SupportedIsoSpeeds.Count() > 0 ? true : false; }
         }
         [IgnoreMember]
         public bool CanSetShutterSpeed
         {
-            get => SupportedShutterSpeeds.Count() > 0 ? true : false;
+            get { return SupportedShutterSpeeds.Count() > 0 ? true : false; }
         }
 
         [Key(4)]

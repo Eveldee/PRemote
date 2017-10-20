@@ -59,21 +59,14 @@ namespace PRemote.Client.CLI
             byte[] buffer = new byte[PConnection.BufferSize];
 
             Console.WriteLine("Receiving capabilities...");
-            networkStream.Read(buffer, 0, 8);
-            long lenght = BitConverter.ToInt64(buffer, 0);
-            MemoryStream memoryStream = new MemoryStream();
 
             // Receive Header
-            while (memoryStream.Length < lenght)
-            {
-                int received = networkStream.Read(buffer, 0, buffer.Length);
-                memoryStream.Write(buffer, 0, received);
-            }
+            int received = networkStream.Read(buffer, 0, buffer.Length);
+            Console.WriteLine("Received length: " + received);
 
-            CameraCapabilities capabilities = MessagePackSerializer.Deserialize<CameraCapabilities>(memoryStream);
-            memoryStream.Close();
+            CameraCapabilities packetCapabilities = MessagePackSerializer.Deserialize<CameraCapabilities>(buffer.SubArray(0, received));
             Console.WriteLine();
-            WriteCapabilities(capabilities);
+            WriteCapabilities(packetCapabilities);
             Console.WriteLine();
 
             Console.WriteLine("Connected to server, you can now send request");
@@ -82,16 +75,20 @@ namespace PRemote.Client.CLI
 
             while ((input = Console.ReadLine()) != "exit")
             {
-                MemoryStream data = new MemoryStream();
-                string arg = input.Split(' ').SubArray(2)[0];
+                string arg = "";
+                try
+                {
+                    arg = input.Split(' ')[1];
+                }
+                catch (Exception) { }
                 PDataType pDataType;
                 object value;
 
-                switch (input)
+                switch (input.Split(' ')[0])
                 {
                     case "picture":
                         pDataType = PDataType.Picture;
-                        value = null;
+                        value = "";
                         break;
                     case "iso":
                         pDataType = PDataType.ISO;
@@ -109,33 +106,22 @@ namespace PRemote.Client.CLI
                         continue;
                 }
 
-                MessagePackSerializer.Serialize(data, new PPacket(pDataType, value));
-                long dataLenght = data.Length;
+                byte[] data = MessagePackSerializer.Serialize(new PPacket(pDataType, value));
+                Console.WriteLine($"Sending {data.Length} bytes");
 
-                networkStream.Write(BitConverter.GetBytes(dataLenght), 0, 8);
-
-                while (data.Position < dataLenght)
-                {
-                    //? Get left bytes to send
-                    int leftBytes = (int)(lenght - data.Position);
-                    if (leftBytes > PConnection.BufferSize)
-                        leftBytes = PConnection.BufferSize;
-
-                    data.Read(buffer, 0, leftBytes);
-                    networkStream.Write(buffer, 0, leftBytes);
-                }
+                networkStream.Write(data, 0, data.Length);
             }
         }
 
         static void WriteCapabilities(CameraCapabilities capabilities)
         {
             Console.WriteLine($@"{capabilities.Name}:\n
-                {capabilities.BatteryLevel}%\n
-                Configure: {capabilities.CanBeConfigured}\n
-                Preview: {capabilities.CanCapturePreviews}\n
-                Iso: {capabilities.SupportedIsoSpeeds.Concat(" ")}\n
-                Apertures: {capabilities.SupportedApertures.Concat(" ")}\n
-                ShutterSpeeds: {capabilities.SupportedShutterSpeeds.Concat(" ")}");
+            {capabilities.BatteryLevel} %\n
+            Configure: {capabilities.CanBeConfigured}\n
+            Preview: {capabilities.CanCapturePreviews}\n");
+            //                + "Iso:" + capabilities.SupportedIsoSpeeds.Concat(" ") + "\n"
+            //				+ "Apertures:" + capabilities.SupportedApertures.Concat(" ") + "\n"
+            //				+ "ShutterSpeeds:" + capabilities.SupportedShutterSpeeds.Concat(" "));
         }
     }
 }

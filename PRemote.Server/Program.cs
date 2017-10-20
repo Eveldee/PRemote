@@ -11,6 +11,7 @@ using System.IO;
 using MessagePack;
 using PRemote.Shared;
 using PRemote.Server.Extensions;
+using PRemote.Shared.Extensions;
 
 namespace PRemote.Server
 {
@@ -20,15 +21,17 @@ namespace PRemote.Server
         static bool IsStarted = true;
         static IPEndPoint BroadcastIP { get; } = new IPEndPoint(IPAddress.Broadcast, PConnection.UDPPort);
         static List<Camera> CameraList = new List<Camera>();
+        static NetworkStream networkStream;
 
         static void Main(string[] args) //! Main Method
         {
             Console.WriteLine("[PRemote] Starting PRemote server...");
 
             // Getting Cameras
-            Console.WriteLine("Listening for remote DSLR");
             Thread cameraThread = new Thread(CameraThread);
             cameraThread.Start();
+            while (CameraList.Count < 1)
+                Thread.Sleep(300);
 
             // Used for auto-connection
             Thread broadcastThread = new Thread(BroadcastThread);
@@ -48,12 +51,19 @@ namespace PRemote.Server
 
         static async void CameraThread() //? Search for camera
         {
+            Console.WriteLine("[Camera Thread] Listening for remote DSLR");
+
             while (IsStarted)
             {
                 // Delete disconnected Camera & Camera that can't be remote controlled
                 for (int i = 0; i < CameraList.Count; i++)
+                {
                     if (!CameraList[i].CanCaptureImages)
+                    {
+                        Console.WriteLine($"[Camera Thread] Removed {CameraList[i].Name}");
                         CameraList.RemoveAt(i);
+                    }
+                }
 
                 foreach (Camera camera in await Camera.GetCamerasAsync())
                 {
@@ -98,63 +108,40 @@ namespace PRemote.Server
                 Console.WriteLine("[TCP Thread] Accepted conneciton from " + client.Client.RemoteEndPoint.ToString());
 
                 // Send capabilities to Client
-                Stream stream = new MemoryStream();
-                MessagePackSerializer.Serialize(stream, new PPacket(PDataType.Configuration, (CameraList[0].GetCameraCapabilities())));
-                long lenght = stream.Length;
-                byte[] buffer = new byte[PConnection.BufferSize];
+                Console.WriteLine("[TCP Thread] Sending capabilities...");
+                byte[] data = MessagePackSerializer.Serialize(CameraList[0].GetCameraCapabilities());
 
-                using (NetworkStream networkStream = client.GetStream())
-                {
-                    // Send size to client
-                    networkStream.Write(BitConverter.GetBytes(lenght), 0, 8);
+                // Send in Stream
+                networkStream = client.GetStream();
+                Console.WriteLine($"[TCP Thread] Sending {data.Length} bytes");
 
-                    // Send bytes
-                    while (stream.Position <= lenght)
-                    {
-                        //? Get left bytes to send
-                        int leftBytes = (int)(lenght - stream.Position);
-                        if (leftBytes > PConnection.BufferSize)
-                            leftBytes = PConnection.BufferSize;
+                // Send bytes
+                networkStream.Write(data, 0, (int)data.Length);
 
-                        stream.Read(buffer, 0, leftBytes);
-                        networkStream.Write(buffer, 0, leftBytes);
-                    }
-                }
-                stream.Close();
+                Console.WriteLine("[TCP Thread] Capabilities sent");
 
                 // Start Transfer Thread
                 Thread dataThread = new Thread(TransferThread);
-                dataThread.Start(client);
+                dataThread.Start();
             }
         }
 
-        static async void TransferThread(object obj) //? Receive data from client
+        static async void TransferThread() //? Receive data from client
         {
             Console.WriteLine("[Client Thread] Receiving data from client.");
 
-            TcpClient client = (TcpClient)obj;
-            NetworkStream networkStream = client.GetStream();
-            MemoryStream packetStream = new MemoryStream();
             byte[] buffer = new byte[PConnection.BufferSize];
 
             while (IsStarted)
             {
                 try
                 {
-                    // Read lenght
-                    networkStream.Read(buffer, 0, 8);
-                    long lenght = BitConverter.ToInt32(buffer, 0);
-                    int read = 0;
-
                     // Read data
-                    while (packetStream.Length < lenght)
-                    {
-                        read = networkStream.Read(buffer, 0, buffer.Length);
-                        packetStream.Write(buffer, 0, read);
-                    }
+                    int received = networkStream.Read(buffer, 0, buffer.Length);
+                    Console.WriteLine($"[Client Thread] Received {received} bytes.");
 
-                    PPacket packet = MessagePackSerializer.Deserialize<PPacket>(packetStream);
-                    Console.WriteLine("Packet: " + packet.ToString());
+                    PPacket packet = MessagePackSerializer.Deserialize<PPacket>(buffer.SubArray(0, received));
+                    Console.WriteLine("[Client Thread] Packet: " + packet.ToString());
                     await SetSetting(packet);
                 }
                 catch (Exception e)
@@ -177,7 +164,7 @@ namespace PRemote.Server
                         break;
                     case PDataType.ISO:
                         foreach (Camera camera in CameraList)
-                            await camera.SetIsoSpeedAsync((int)packet.Data);
+                            await camera.SetIsoSpeedAsync(int.Parse(packet.Data.ToString()));
                         break;
                     case PDataType.Picture:
                         foreach (Camera camera in CameraList)
