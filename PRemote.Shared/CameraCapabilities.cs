@@ -38,21 +38,33 @@ namespace PRemote.Shared
         }
 
         [Key(4)]
-        public IEnumerable<double> SupportedApertures { get; }
+        public double CurrentAperture { get; }
         [Key(5)]
-        public IEnumerable<int> SupportedIsoSpeeds { get; }
+        public int CurrentIsoSpeed { get; }
         [Key(6)]
-        public IEnumerable<string> SupportedShutterSpeeds { get; }
+        public string CurrentShutterSpeed { get; }
+
+        [Key(7)]
+        public double[] SupportedApertures { get; }
+        [Key(8)]
+        public int[] SupportedIsoSpeeds { get; }
+        [Key(9)]
+        public string[] SupportedShutterSpeeds { get; }
 
         // Constructor
         public CameraCapabilities(string name, string battery, bool configurable, bool canPreview,
-            IEnumerable<double> apertures, IEnumerable<int> isoSpeeds, IEnumerable<string> shutterSpeeds)
+            double aperture, int isoSpeed, string shutterSpeed,
+            double[] apertures, int[] isoSpeeds, string[] shutterSpeeds)
         {
             Name = name;
             BatteryLevel = battery;
 
             CanBeConfigured = configurable;
             CanCapturePreviews = canPreview;
+
+            CurrentAperture = aperture;
+            CurrentIsoSpeed = isoSpeed;
+            CurrentShutterSpeed = shutterSpeed;
 
             SupportedApertures = apertures;
             SupportedIsoSpeeds = isoSpeeds;

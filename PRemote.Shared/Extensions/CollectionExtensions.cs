@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PRemote.Shared.Extensions
 {
-    public static class CollectionExtensions //? Extensions for Collections types
+    public static class CollectionExtensions // Extensions for Collections types
     {
         /// <summary>
         /// Return a subpart of an <see cref="Array"/> by index
@@ -13,7 +13,7 @@ namespace PRemote.Shared.Extensions
         /// <param name="arr"></param>
         /// <param name="index">Index to start</param>
         /// <returns>Return a subpart of an <see cref="Array"/> by index</returns>
-        public static T[] SubArray<T>(this T[] arr, int index) //! Return a subpart of an Array
+        public static T[] SubArray<T>(this T[] arr, int index) // Return a subpart of an Array
         {
             int lenght = arr.Length - index;
             T[] subarr = new T[lenght];
@@ -28,7 +28,7 @@ namespace PRemote.Shared.Extensions
         /// <param name="index">Index to start</param>
         /// <param name="lenght">Lenght to cut</param>
         /// <returns>Return a subpart of an <see cref="Array"/> by index and lenght</returns>
-        public static T[] SubArray<T>(this T[] arr, int index, int lenght) //! Return a subpart of an Array
+        public static T[] SubArray<T>(this T[] arr, int index, int lenght) // Return a subpart of an Array
         {
             if (lenght + index > arr.Length)
                 lenght = arr.Length - index;
@@ -45,7 +45,7 @@ namespace PRemote.Shared.Extensions
         /// <param name="index">Index to start</param>
         /// <param name="reversed">Is couting from end or not</param>
         /// <returns>Return a subpart of an <see cref="Array"/> by index from end</returns>
-        public static T[] SubArray<T>(this T[] arr, int index, bool reversed) //! Return a subpart of an Array
+        public static T[] SubArray<T>(this T[] arr, int index, bool reversed) // Return a subpart of an Array
         {
             if (!reversed)
                 return arr.SubArray(index);
@@ -69,7 +69,7 @@ namespace PRemote.Shared.Extensions
         /// <param name="lenght">Lenght to cut</param>
         /// <param name="reversed">Is couting from end or not</param>
         /// <returns>Return a subpart of an <see cref="Array"/> by index and lenght from end</returns>
-        public static T[] SubArray<T>(this T[] arr, int index, int lenght, bool reversed) //! Return a subpart of an Array
+        public static T[] SubArray<T>(this T[] arr, int index, int lenght, bool reversed) // Return a subpart of an Array
         {
             if (!reversed)
                 return arr.SubArray(index, lenght);
@@ -93,8 +93,11 @@ namespace PRemote.Shared.Extensions
         /// <param name="arr"></param>
         /// <param name="delim">A <see cref="string"/> delimiter (ex: texte1, texte2, texte3)</param>
         /// <returns>Return all elementents of an array</returns>
-        public static string Concat<T>(this IEnumerable<T> arr, string delim = "") //! Return all elements of an Enumerable<> in one line.
+        public static string Concat<T>(this IEnumerable<T> arr, string delim = "") // Return all elements of an Enumerable<> in one line.
         {
+            if (arr == null)
+                return "unavaible";
+
             string final = "";
 
             foreach (T str in arr)

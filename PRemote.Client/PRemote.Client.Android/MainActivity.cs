@@ -7,6 +7,7 @@ using System.Net;
 
 using PRemote.Shared;
 using MessagePack;
+using System.Linq;
 
 namespace PRemote.Client.Android
 {
@@ -24,8 +25,8 @@ namespace PRemote.Client.Android
         Button btn_Picture;
         Button btn_Vocal;
 
-        IPEndPoint _ipServer;
-        NetworkStream _networkStream;
+        IPEndPoint _serverIp;
+        PPacketStream _packetStream;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -67,17 +68,7 @@ namespace PRemote.Client.Android
         // Send Config
         private void Spr_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
-            // Serialize ISO
-            byte[] iso = MessagePackSerializer.Serialize(new PPacket(PDataType.ISO, spr_ISO.SelectedItem));
-            _networkStream.Write(iso, 0, iso.Length);
-
-            // Serialize Aperture
-            byte[] aperture = MessagePackSerializer.Serialize(new PPacket(PDataType.Aperture, spr_Aperture.SelectedItem));
-            _networkStream.Write(aperture, 0, aperture.Length);
-
-            // Serialize Shutter
-            byte[] shutter = MessagePackSerializer.Serialize(new PPacket(PDataType.ShutterSpeed, spr_Shutter.SelectedItem));
-            _networkStream.Write(shutter, 0, shutter.Length);
+            throw new System.NotImplementedException();
         }
 
 
@@ -85,50 +76,34 @@ namespace PRemote.Client.Android
         // Receive UDP broadcast to get discovered IP
         private void UDP_Thread()
         {
-            UdpClient udpClient = new UdpClient(0)
+            UdpClient udpClient = new UdpClient(PConnection.UDPPort)
             {
                 EnableBroadcast = true
             };
 
-            var ipEndPoint = new IPEndPoint(IPAddress.Any, PConnection.UDPPort);
+            _serverIp = new IPEndPoint(IPAddress.Any, PConnection.UDPPort);
+            byte[] data;
 
+            // Wait that the server send the right UDP packet
             while (true)
             {
-                bool packetEqual = true;
-                byte[] data = udpClient.Receive(ref _ipServer);
+                data = udpClient.Receive(ref _serverIp);
 
-                // Check if the packet is the good one
-                if (data.Length == PConnection.UDPPacketDataLenght)
-                {
-                    for (int i = 0; i < data.Length; i++)
-                    {
-                        if (data[i] != PConnection.UDPPacketData[i])
-                        {
-                            packetEqual = false;
-                        }
-                    }
-
-                    // This is the good IP
-                    if (packetEqual)
-                    {
-                        _ipServer = ipEndPoint;
-                        break;
-                    }
-                }
+                if (data.SequenceEqual(PConnection.UDPPacketData))
+                    break;
             }
 
             //Tcp connection
-            Thread tcp = new Thread(TCP_ConnectionThread);
-            tcp.Start();
+            TCP_Connection();
         }
 
-        // Send PPacket to Server
-        private void TCP_ConnectionThread()
+        // Connect to server
+        private void TCP_Connection()
         {
             TcpClient tcpClient = new TcpClient();
-            tcpClient.Connect(_ipServer);
+            tcpClient.Connect(_serverIp);
 
-            _networkStream = tcpClient.GetStream();
+            _packetStream = new PPacketStream(tcpClient.GetStream());
         }
     }
 }

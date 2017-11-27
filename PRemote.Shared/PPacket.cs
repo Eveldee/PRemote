@@ -35,5 +35,5 @@ namespace PRemote.Shared
     /// <summary>
     /// The type of the setting
     /// </summary>
-    public enum PDataType { Picture, ISO, ShutterSpeed, Aperture, Battery }
+    public enum PDataType { Picture, ISO, ShutterSpeed, Aperture, Battery, Configuration }
 }

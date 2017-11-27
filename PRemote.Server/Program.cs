@@ -21,7 +21,7 @@ namespace PRemote.Server
         static bool IsStarted = true;
         static IPEndPoint BroadcastIP { get; } = new IPEndPoint(IPAddress.Broadcast, PConnection.UDPPort);
         static List<Camera> CameraList = new List<Camera>();
-        static NetworkStream networkStream;
+        static NetworkStream _networkStream;
 
         static void Main(string[] args) // Main Method
         {
@@ -30,6 +30,7 @@ namespace PRemote.Server
             // Getting Cameras
             Thread cameraThread = new Thread(CameraThread);
             cameraThread.Start();
+            // Wait 'till one camera is connected
             while (CameraList.Count < 1)
                 Thread.Sleep(300);
 
@@ -58,8 +59,14 @@ namespace PRemote.Server
                 // Delete disconnected Camera & Camera that can't be remote controlled
                 for (int i = 0; i < CameraList.Count; i++)
                 {
-                    // Todo fix it, it don't work
-                    if (!CameraList[i].CanCaptureImages)
+                    try
+                    {
+                        if (!CameraList[i].CanCaptureImages)
+                            throw new Exception();
+
+                        await CameraList[i].GetLensNameAsync();
+                    }
+                    catch (Exception)
                     {
                         Console.WriteLine($"[Camera Thread] Removed {CameraList[i].Name}");
                         CameraList.RemoveAt(i);
@@ -93,8 +100,9 @@ namespace PRemote.Server
             }
         }
 
-        static void ConnectionThread() // Wait TCP connection from a client
+        static async void ConnectionThread() // Wait TCP connection from a client
         {
+            // Start tcpListener
             IPEndPoint iP = new IPEndPoint(IPAddress.Any, PConnection.TCPPort);
             TcpListener tcpListener = new TcpListener(iP);
             tcpListener.Start();
@@ -102,22 +110,19 @@ namespace PRemote.Server
 
             while (IsStarted)
             {
+                // Accept connection
                 Console.WriteLine("[TCP Thread] Waiting client...");
 
                 TcpClient client = tcpListener.AcceptTcpClient();
+                _networkStream = client.GetStream();
 
                 Console.WriteLine("[TCP Thread] Accepted conneciton from " + client.Client.RemoteEndPoint.ToString());
 
                 // Send capabilities to Client
                 Console.WriteLine("[TCP Thread] Sending capabilities...");
-                byte[] data = MessagePackSerializer.Serialize(CameraList[0].GetCameraCapabilities());
 
-                // Send in Stream
-                networkStream = client.GetStream();
-                Console.WriteLine($"[TCP Thread] Sending {data.Length} bytes");
-
-                // Send bytes
-                networkStream.Write(data, 0, data.Length);
+                PPacketStream packetStream = new PPacketStream(_networkStream);
+                packetStream.Send(new PPacket(PDataType.Configuration, (await CameraList[0].GetCameraCapabilitiesAsync())));
 
                 Console.WriteLine("[TCP Thread] Capabilities sent");
 
@@ -130,6 +135,7 @@ namespace PRemote.Server
         static async void TransferThread() // Receive data from client
         {
             Console.WriteLine("[Client Thread] Receiving data from client.");
+            PPacketStream packetStream = new PPacketStream(_networkStream);
 
             byte[] buffer = new byte[PConnection.BufferSize];
 
@@ -138,11 +144,10 @@ namespace PRemote.Server
                 try
                 {
                     // Read data
-                    int received = networkStream.Read(buffer, 0, buffer.Length);
-                    Console.WriteLine($"[Client Thread] Received {received} bytes.");
-
-                    PPacket packet = MessagePackSerializer.Deserialize<PPacket>(buffer.SubArray(0, received));
+                    var packet = packetStream.Receive();
                     Console.WriteLine("[Client Thread] Packet: " + packet.ToString());
+
+                    // Set setting
                     await SetSetting(packet);
                 }
                 catch (Exception e)

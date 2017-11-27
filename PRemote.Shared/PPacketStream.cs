@@ -12,7 +12,7 @@ namespace PRemote.Shared
     /// <summary>
     /// Used to send <see cref="PPacket"/> through <see cref="System.Net.Sockets.NetworkStream"/>
     /// </summary>
-    class PPacketStream : INetworkStreamManager<PPacket>
+    public class PPacketStream : INetworkStreamManager<PPacket>
     {
         /// <summary>
         /// The used <see cref="System.Net.Sockets.NetworkStream"/>

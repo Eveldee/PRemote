@@ -1,24 +1,25 @@
 ﻿using System;
-
-using PRemote.Shared;
-using PRemote.Shared.Extensions;
 using System.Net.Sockets;
 using System.Net;
 using System.Threading;
 using System.IO;
-using MessagePack;
 using System.Linq;
+
+using MessagePack;
+using PRemote.Shared;
+using PRemote.Shared.Extensions;
 
 namespace PRemote.Client.CLI
 {
     class Program
     {
-        static IPEndPoint ServerIP;
-        static TcpClient tcpClient;
-        static NetworkStream networkStream;
+        static IPEndPoint _serverIP;
+        static TcpClient _tcpClient;
+        static PPacketStream _packetStream;
 
         static void Main(string[] args)
         {
+            // Start here
             Console.WriteLine("Starting CLI Client...");
 
             IniConnection();
@@ -26,29 +27,34 @@ namespace PRemote.Client.CLI
 
         static void IniConnection()
         {
+            // Ini all
             Console.WriteLine("Waiting for server...");
 
+            // Find discovered server
             UdpClient udpClient = new UdpClient(PConnection.UDPPort)
             {
                 EnableBroadcast = true
             };
 
-            ServerIP = new IPEndPoint(IPAddress.Any, PConnection.UDPPort);
+            _serverIP = new IPEndPoint(IPAddress.Any, PConnection.UDPPort);
             byte[] header;
 
             while (true)
             {
-                header = udpClient.Receive(ref ServerIP);
+                header = udpClient.Receive(ref _serverIP);
 
                 if (header.SequenceEqual(PConnection.UDPPacketData))
                     break;
             }
 
-            Console.WriteLine("Found server on " + ServerIP.ToString());
+            Console.WriteLine("Found server on " + _serverIP.ToString());
 
-            tcpClient = new TcpClient(ServerIP.Address.ToString(), PConnection.TCPPort);
-            Console.WriteLine("Connected to " + tcpClient.Client.RemoteEndPoint.ToString());
-            networkStream = tcpClient.GetStream();
+            // Connect to the server
+            _tcpClient = new TcpClient(_serverIP.Address.ToString(), PConnection.TCPPort);
+
+            Console.WriteLine("Connected to " + _tcpClient.Client.RemoteEndPoint.ToString());
+
+            _packetStream = new PPacketStream(_tcpClient.GetStream());
 
             Thread transferThread = new Thread(TransferThread);
             transferThread.Start();
@@ -56,23 +62,28 @@ namespace PRemote.Client.CLI
 
         static void TransferThread()
         {
-            byte[] buffer = new byte[PConnection.BufferSize];
-
+            // Receive capabilities
             Console.WriteLine("Receiving capabilities...");
 
-            // Receive Header
-            int received = networkStream.Read(buffer, 0, buffer.Length);
-            Console.WriteLine("Received length: " + received);
+            PPacket capabilities = _packetStream.Receive();
 
-            CameraCapabilities packetCapabilities = MessagePackSerializer.Deserialize<CameraCapabilities>(buffer.SubArray(0, received));
-            Console.WriteLine();
-            WriteCapabilities(packetCapabilities);
-            Console.WriteLine();
+            if (capabilities.SettingType == PDataType.Configuration)
+            {
+                CameraCapabilities packetCapabilities = (CameraCapabilities)capabilities.Data;
+                Console.WriteLine();
+                WriteCapabilities(packetCapabilities);
+                Console.WriteLine();
+            }
+            else
+            {
+                Console.WriteLine("Invalid configuration, skipping it...\n");
+            }
 
             Console.WriteLine("Connected to server, you can now send request");
 
             string input;
 
+            // Send commands
             while ((input = Console.ReadLine()) != "exit")
             {
                 string arg = "";
@@ -106,10 +117,9 @@ namespace PRemote.Client.CLI
                         continue;
                 }
 
-                byte[] data = MessagePackSerializer.Serialize(new PPacket(pDataType, value));
-                Console.WriteLine($"Sending {data.Length} bytes");
-
-                networkStream.Write(data, 0, data.Length);
+                Console.WriteLine("Sending packet...");
+                _packetStream.Send(new PPacket(pDataType, value));
+                Console.WriteLine("Packet sent");
             }
         }
 
