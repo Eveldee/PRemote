@@ -1,21 +1,15 @@
-﻿using System;
-using MessagePack;
+﻿using MessagePack;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace PRemote.Shared
 {
-    public class PConnection //! Store some coonst fields
-    {
-        public const int UDPPort = 6548;
-        public const int TCPPort = 6549;
-
-        public static readonly byte[] UDPPacketData = { 0, 255, 155, 143 };
-        public static readonly int UDPPacketDataLenght = UDPPacketData.Length;
-
-        public const int BufferSize = 1024;
-    }
-
+    /// <summary>
+    /// Main class for TCP data
+    /// </summary>
     [MessagePackObject]
-    public class PPacket //! Main class for TCP data
+    public class PPacket
     {
         // Setting Type
         [Key(0)]
@@ -38,6 +32,8 @@ namespace PRemote.Shared
         }
     }
 
-    //! The type of the setting
+    /// <summary>
+    /// The type of the setting
+    /// </summary>
     public enum PDataType { Picture, ISO, ShutterSpeed, Aperture, Battery }
 }

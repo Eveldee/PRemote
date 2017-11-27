@@ -6,8 +6,11 @@ using System.Linq;
 
 namespace PRemote.Shared
 {
+    /// <summary>
+    /// Represent capabilities of a camera
+    /// </summary>
     [MessagePackObject]
-    public struct CameraCapabilities //! Represent capabilities of a camera
+    public struct CameraCapabilities
     {
         [Key(0)]
         public string Name { get; }

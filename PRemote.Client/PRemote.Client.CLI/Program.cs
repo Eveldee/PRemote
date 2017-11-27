@@ -118,10 +118,10 @@ namespace PRemote.Client.CLI
             Console.WriteLine($@"{capabilities.Name}:\n
             {capabilities.BatteryLevel} %\n
             Configure: {capabilities.CanBeConfigured}\n
-            Preview: {capabilities.CanCapturePreviews}\n");
-            //                + "Iso:" + capabilities.SupportedIsoSpeeds.Concat(" ") + "\n"
-            //				+ "Apertures:" + capabilities.SupportedApertures.Concat(" ") + "\n"
-            //				+ "ShutterSpeeds:" + capabilities.SupportedShutterSpeeds.Concat(" "));
+            Preview: {capabilities.CanCapturePreviews}\n
+            Iso: {capabilities.SupportedIsoSpeeds.Concat(" ")}\n
+            Apertures: {capabilities.SupportedApertures.Concat(" ")}\n
+            ShutterSpeeds: {capabilities.SupportedShutterSpeeds.Concat(" ")}");
         }
     }
 }

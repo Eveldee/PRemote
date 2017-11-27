@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PRemote.Shared", "PRemote.Shared\PRemote.Shared.csproj", "{2F86819E-77D7-496B-8C20-86D221086DD5}"
 EndProject
@@ -16,6 +16,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PRemote.Client.CLI", "PRemo
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PRemote.Client.Android", "PRemote.Client\PRemote.Client.Android\PRemote.Client.Android.csproj", "{69A8CCA3-F82D-4C67-9258-EA17F4E27480}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2F86819E-77D7-496B-8C20-86D221086DD5} = {2F86819E-77D7-496B-8C20-86D221086DD5}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

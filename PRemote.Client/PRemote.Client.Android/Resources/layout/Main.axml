@@ -1,7 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
-</LinearLayout>
+    android:layout_height="match_parent">
+<!--State-->
+    <TextView
+        android:id="@+id/txt_State"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:textAppearance="@style/txt_base"
+        android:text="@string/state_Loading" />
+    <ImageView
+        android:id="@+id/img_State"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_alignBottom="@id/txt_State" />
+<!--Iso Pick-->
+    <TextView
+        android:id="@+id/txt_ISO"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_below="@id/txt_State"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:textAppearance="@style/txt_base"
+        android:text="ISO: " />
+    <Spinner
+        android:id="@+id/spr_ISO"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_alignBottom="@id/txt_ISO"
+        android:layout_toRightOf="@id/txt_ISO" />
+<!--Aperture Pick-->
+    <TextView
+        android:id="@+id/txt_Aperture"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_below="@id/txt_ISO"
+        android:layout_alignLeft="@id/txt_ISO"
+        android:layout_marginTop="20dp"
+        android:textAppearance="@style/txt_base"
+        android:text="Aperture: " />
+    <Spinner
+        android:id="@+id/spr_Aperture"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_alignBottom="@id/txt_Aperture"
+        android:layout_toRightOf="@id/txt_Aperture" />
+<!--ShutterSpeed Pick-->
+    <TextView
+        android:id="@+id/txt_Shutter"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_below="@id/txt_Aperture"
+        android:layout_alignLeft="@id/txt_ISO"
+        android:layout_marginTop="20dp"
+        android:textAppearance="@style/txt_base"
+        android:text="Shutter: " />
+    <Spinner
+        android:id="@+id/spr_Shutter"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_alignBottom="@id/txt_Shutter"
+        android:layout_toRightOf="@id/txt_Shutter" />
+<!--Button-->
+    <Button
+        android:id="@+id/btn_Picture"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_below="@id/txt_Shutter"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:text="Déclencher" />
+    <Button
+        android:id="@+id/btn_Vocal"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_toRightOf="@id/btn_Picture"
+        android:layout_alignBottom="@id/btn_Picture"
+        android:text="Vocal" />
+</RelativeLayout>

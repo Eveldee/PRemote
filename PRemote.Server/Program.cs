@@ -17,13 +17,13 @@ namespace PRemote.Server
 {
     class Program
     {
-        //? Fields
+        // Fields
         static bool IsStarted = true;
         static IPEndPoint BroadcastIP { get; } = new IPEndPoint(IPAddress.Broadcast, PConnection.UDPPort);
         static List<Camera> CameraList = new List<Camera>();
         static NetworkStream networkStream;
 
-        static void Main(string[] args) //! Main Method
+        static void Main(string[] args) // Main Method
         {
             Console.WriteLine("[PRemote] Starting PRemote server...");
 
@@ -49,7 +49,7 @@ namespace PRemote.Server
             Environment.Exit(0);
         }
 
-        static async void CameraThread() //? Search for camera
+        static async void CameraThread() // Search for camera
         {
             Console.WriteLine("[Camera Thread] Listening for remote DSLR");
 
@@ -58,6 +58,7 @@ namespace PRemote.Server
                 // Delete disconnected Camera & Camera that can't be remote controlled
                 for (int i = 0; i < CameraList.Count; i++)
                 {
+                    // Todo fix it, it don't work
                     if (!CameraList[i].CanCaptureImages)
                     {
                         Console.WriteLine($"[Camera Thread] Removed {CameraList[i].Name}");
@@ -80,7 +81,7 @@ namespace PRemote.Server
 
         }
 
-        static void BroadcastThread() //? Send broadcast packets through UDP
+        static void BroadcastThread() // Send broadcast packets through UDP
         {
             UdpClient udpClient = new UdpClient(0);
             Console.WriteLine("[UDP Thread] Sending broadcast packets...");
@@ -92,7 +93,7 @@ namespace PRemote.Server
             }
         }
 
-        static void ConnectionThread() //? Wait TCP connection from a client
+        static void ConnectionThread() // Wait TCP connection from a client
         {
             IPEndPoint iP = new IPEndPoint(IPAddress.Any, PConnection.TCPPort);
             TcpListener tcpListener = new TcpListener(iP);
@@ -116,7 +117,7 @@ namespace PRemote.Server
                 Console.WriteLine($"[TCP Thread] Sending {data.Length} bytes");
 
                 // Send bytes
-                networkStream.Write(data, 0, (int)data.Length);
+                networkStream.Write(data, 0, data.Length);
 
                 Console.WriteLine("[TCP Thread] Capabilities sent");
 
@@ -126,7 +127,7 @@ namespace PRemote.Server
             }
         }
 
-        static async void TransferThread() //? Receive data from client
+        static async void TransferThread() // Receive data from client
         {
             Console.WriteLine("[Client Thread] Receiving data from client.");
 
@@ -153,7 +154,7 @@ namespace PRemote.Server
 
         static async Task SetSetting(PPacket packet)
         {
-            //? Read a setting from a packet and try to set it
+            // Read a setting from a packet and try to set it
             try
             {
                 switch (packet.SettingType)
@@ -182,8 +183,10 @@ namespace PRemote.Server
             }
         }
     }
-
-    class CameraCompare : IEqualityComparer<Camera> //! Equality comparer for Camera
+    /// <summary>
+    /// Equality comparer for Camera
+    /// </summary>
+    class CameraCompare : IEqualityComparer<Camera>
     {
         public bool Equals(Camera x, Camera y)
         {
@@ -195,6 +198,9 @@ namespace PRemote.Server
             string hashCode = "";
 
             foreach (char chr in obj.Name)
+                hashCode += (int)chr;
+
+            foreach (char chr in obj.Port)
                 hashCode += (int)chr;
 
             return int.Parse(hashCode);
