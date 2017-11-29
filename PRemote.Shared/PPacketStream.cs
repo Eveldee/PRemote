@@ -158,7 +158,7 @@ namespace PRemote.Shared
                 if (leftBytes > PConnection.BufferSize)
                     leftBytes = PConnection.BufferSize;
 
-                NetworkStream.Write(data, 0, position);
+                NetworkStream.Write(data, position, leftBytes);
 
                 position += leftBytes;
             }
@@ -201,7 +201,7 @@ namespace PRemote.Shared
                 if (leftBytes > PConnection.BufferSize)
                     leftBytes = PConnection.BufferSize;
 
-                await NetworkStream.WriteAsync(data, 0, position);
+                await NetworkStream.WriteAsync(data, position, leftBytes);
 
                 position += leftBytes;
             }
