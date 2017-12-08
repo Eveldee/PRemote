@@ -96,12 +96,16 @@ namespace PRemote.Shared.Extensions
         public static string Concat<T>(this IEnumerable<T> arr, string delim = "") // Return all elements of an Enumerable<> in one line.
         {
             if (arr == null)
-                return "unavaible";
+                return "N/A";
 
             string final = "";
 
             foreach (T str in arr)
                 final += str.ToString() + delim;
+
+            // Check if there's nothing
+            if (final == "")
+                return "N/A";
 
             final = final.Remove(final.Length - delim.Length);
             return final;

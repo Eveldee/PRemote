@@ -15,7 +15,7 @@ namespace PRemote.Client.CLI
     {
         static IPEndPoint _serverIP;
         static TcpClient _tcpClient;
-        static PPacketStream _packetStream;
+        static PacketStream _packetStream;
 
         static void Main(string[] args)
         {
@@ -54,7 +54,7 @@ namespace PRemote.Client.CLI
 
             Console.WriteLine("Connected to " + _tcpClient.Client.RemoteEndPoint.ToString());
 
-            _packetStream = new PPacketStream(_tcpClient.GetStream());
+            _packetStream = new PacketStream(_tcpClient.GetStream());
 
             Thread transferThread = new Thread(TransferThread);
             transferThread.Start();
@@ -65,18 +65,19 @@ namespace PRemote.Client.CLI
             // Receive capabilities
             Console.WriteLine("Receiving capabilities...");
 
-            PPacket capabilities = _packetStream.Receive();
-
-            if (capabilities.SettingType == PDataType.Configuration)
+            try
             {
-                CameraCapabilities packetCapabilities = (CameraCapabilities)capabilities.Data;
+                CameraCapabilities capabilities = _packetStream.Receive<CameraCapabilities>();
+
+                // Write Capabilities
                 Console.WriteLine();
-                WriteCapabilities(packetCapabilities);
+                WriteCapabilities(capabilities);
                 Console.WriteLine();
             }
-            else
+            catch (Exception e)
             {
                 Console.WriteLine("Invalid configuration, skipping it...\n");
+                Console.WriteLine(e.ToString());
             }
 
             Console.WriteLine("Connected to server, you can now send request");
@@ -87,13 +88,16 @@ namespace PRemote.Client.CLI
             while ((input = Console.ReadLine()) != "exit")
             {
                 string arg = "";
-                try
-                {
-                    arg = input.Split(' ')[1];
-                }
-                catch (Exception) { }
                 PDataType pDataType;
                 object value;
+                string[] split = input.Split(' ');
+
+                // Check invalid command
+                if ((split.Length < 1) || (split.Length < 2 && split[0] != "picture"))
+                {
+                    Console.WriteLine("Invalid command");
+                    continue;
+                }
 
                 switch (input.Split(' ')[0])
                 {
@@ -114,6 +118,7 @@ namespace PRemote.Client.CLI
                         value = arg;
                         break;
                     default:
+                        Console.WriteLine("Invalid Command");
                         continue;
                 }
 
@@ -125,12 +130,12 @@ namespace PRemote.Client.CLI
 
         static void WriteCapabilities(CameraCapabilities capabilities)
         {
-            Console.WriteLine($@"{capabilities.Name}:\n
-            {capabilities.BatteryLevel} %\n
-            Configure: {capabilities.CanBeConfigured}\n
-            Preview: {capabilities.CanCapturePreviews}\n
-            Iso: {capabilities.SupportedIsoSpeeds.Concat(" ")}\n
-            Apertures: {capabilities.SupportedApertures.Concat(" ")}\n
+            Console.WriteLine($@"{capabilities.Name}:
+            {capabilities.BatteryLevel} %
+            Configure: {capabilities.CanBeConfigured}
+            Preview: {capabilities.CanCapturePreviews}
+            Iso: {capabilities.SupportedIsoSpeeds.Concat(" ")}
+            Apertures: {capabilities.SupportedApertures.Concat(" ")}
             ShutterSpeeds: {capabilities.SupportedShutterSpeeds.Concat(" ")}");
         }
     }

@@ -26,7 +26,7 @@ namespace PRemote.Client.Android
         Button btn_Vocal;
 
         IPEndPoint _serverIp;
-        PPacketStream _packetStream;
+        PacketStream _packetStream;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -103,7 +103,7 @@ namespace PRemote.Client.Android
             TcpClient tcpClient = new TcpClient();
             tcpClient.Connect(_serverIp);
 
-            _packetStream = new PPacketStream(tcpClient.GetStream());
+            _packetStream = new PacketStream(tcpClient.GetStream());
         }
     }
 }

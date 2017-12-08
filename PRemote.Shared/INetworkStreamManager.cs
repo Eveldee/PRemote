@@ -10,7 +10,7 @@ namespace PRemote.Shared
     /// Manage a NetworkStream
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface INetworkStreamManager<T>
+    public interface INetworkStreamManager
     {
         NetworkStream NetworkStream { get; }
 
@@ -18,46 +18,46 @@ namespace PRemote.Shared
         /// Receive an object
         /// </summary>
         /// <returns></returns>
-        T Receive();
+        T Receive<T>();
         /// <summary>
         /// Receive an object async
         /// </summary>
         /// <returns></returns>
-        Task<T> ReceiveAsync();
+        Task<T> ReceiveAsync<T>();
 
         /// <summary>
         /// Receive multiple object
         /// </summary>
         /// <param name="n"></param>
         /// <returns></returns>
-        T[] Receive(int number);
+        T[] Receive<T>(int number);
         /// <summary>
         /// Receive multiple object async
         /// </summary>
         /// <param name="n"></param>
         /// <returns></returns>
-        Task<T[]> ReceiveAsync(int number);
+        Task<T[]> ReceiveAsync<T>(int number);
 
         /// <summary>
         /// Send an object
         /// </summary>
         /// <param name="obj"></param>
-        void Send(T obj);
+        void Send<T>(T obj);
         /// <summary>
         /// Send an object async
         /// </summary>
         /// <param name="obj"></param>
-        Task SendAsync(T obj);
+        Task SendAsync<T>(T obj);
 
         /// <summary>
         /// Send multiple object
         /// </summary>
         /// <param name="obj"></param>
-        void Send(params T[] obj);
+        void Send<T>(params T[] obj);
         /// <summary>
         /// Send multiple object async
         /// </summary>
         /// <param name="obj"></param>
-        Task SendAsync(params T[] obj);
+        Task SendAsync<T>(params T[] obj);
     }
 }

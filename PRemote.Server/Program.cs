@@ -18,10 +18,9 @@ namespace PRemote.Server
     class Program
     {
         // Fields
-        static bool IsStarted = true;
+        static bool IsStarted { get; set; } = true;
         static IPEndPoint BroadcastIP { get; } = new IPEndPoint(IPAddress.Broadcast, PConnection.UDPPort);
-        static List<Camera> CameraList = new List<Camera>();
-        static NetworkStream _networkStream;
+        static List<Camera> CameraList { get; set; } = new List<Camera>();
 
         static void Main(string[] args) // Main Method
         {
@@ -56,22 +55,25 @@ namespace PRemote.Server
 
             while (IsStarted)
             {
+                // Error: fix this plz
+                // Todo: This... It don't walk, neither run =)
                 // Delete disconnected Camera & Camera that can't be remote controlled
-                for (int i = 0; i < CameraList.Count; i++)
-                {
-                    try
-                    {
-                        if (!CameraList[i].CanCaptureImages)
-                            throw new Exception();
+                //for (int i = 0; i < CameraList.Count; i++)
+                //{
+                //    try
+                //    {
+                //        if (!CameraList[i].CanCaptureImages)
+                //            throw new Exception();
 
-                        await CameraList[i].GetLensNameAsync();
-                    }
-                    catch (Exception)
-                    {
-                        Console.WriteLine($"[Camera Thread] Removed {CameraList[i].Name}");
-                        CameraList.RemoveAt(i);
-                    }
-                }
+                //        await CameraList[i].GetLensNameAsync();
+                //    }
+                //    catch (Exception)
+                //    {
+                //        Console.WriteLine($"[Camera Thread] Removed {CameraList[i].Name}");
+                //        CameraList.RemoveAt(i);
+                //    }
+                //}
+
 
                 foreach (Camera camera in await Camera.GetCamerasAsync())
                 {
@@ -83,20 +85,20 @@ namespace PRemote.Server
                     }
                 }
 
-                Thread.Sleep(5000);
+                await Task.Delay(5000);
             }
 
         }
 
-        static void BroadcastThread() // Send broadcast packets through UDP
+        static async void BroadcastThread() // Send broadcast packets through UDP
         {
             UdpClient udpClient = new UdpClient(0);
             Console.WriteLine("[UDP Thread] Sending broadcast packets...");
 
             while (IsStarted)
             {
-                udpClient.Send(PConnection.UDPPacketData, PConnection.UDPPacketDataLenght, BroadcastIP);
-                Thread.Sleep(2000);
+                await udpClient.SendAsync(PConnection.UDPPacketData, PConnection.UDPPacketDataLenght, BroadcastIP);
+                await Task.Delay(2000);
             }
         }
 
@@ -108,83 +110,104 @@ namespace PRemote.Server
             tcpListener.Start();
             Console.WriteLine("[TCP Thread]Listening on " + iP.ToString());
 
+            // Client loop
             while (IsStarted)
             {
                 // Accept connection
                 Console.WriteLine("[TCP Thread] Waiting client...");
 
                 TcpClient client = tcpListener.AcceptTcpClient();
-                _networkStream = client.GetStream();
+                var networkStream = client.GetStream();
 
                 Console.WriteLine("[TCP Thread] Accepted conneciton from " + client.Client.RemoteEndPoint.ToString());
 
                 // Send capabilities to Client
                 Console.WriteLine("[TCP Thread] Sending capabilities...");
 
-                PPacketStream packetStream = new PPacketStream(_networkStream);
-                packetStream.Send(new PPacket(PDataType.Configuration, (await CameraList[0].GetCameraCapabilitiesAsync())));
+                PacketStream packetStream = new PacketStream(networkStream);
+                await packetStream.SendAsync((await CameraList[0].GetCameraCapabilitiesAsync()));
 
                 Console.WriteLine("[TCP Thread] Capabilities sent");
 
                 // Start Transfer Thread
                 Thread dataThread = new Thread(TransferThread);
-                dataThread.Start();
+                dataThread.Start(packetStream);
             }
         }
 
-        static async void TransferThread() // Receive data from client
+        static async void TransferThread(object pPacketStream) // Receive data from client
         {
             Console.WriteLine("[Client Thread] Receiving data from client.");
-            PPacketStream packetStream = new PPacketStream(_networkStream);
-
-            byte[] buffer = new byte[PConnection.BufferSize];
+            PacketStream packetStream = (PacketStream)pPacketStream;
 
             while (IsStarted)
             {
                 try
                 {
                     // Read data
-                    var packet = packetStream.Receive();
-                    Console.WriteLine("[Client Thread] Packet: " + packet.ToString());
+                    Console.WriteLine("[Client Thread] Waiting packet");
+                    var packet = await packetStream.ReceiveAsync<PPacket>();
+                    Console.WriteLine("[Client Thread] Received packet: " + packet.ToString());
 
                     // Set setting
                     await SetSetting(packet);
+                    Console.WriteLine("[Client Thread] Setting set");
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("[Client Thread] Received invalid data " + e.Message);
+                    Console.WriteLine("[Client Thread] Received invalid data or client disconnected: " + e.Message);
+                    break;
                 }
             }
+            Console.WriteLine("Disconnected a client.");
         }
 
-        static async Task SetSetting(PPacket packet)
+        static async Task SetSetting(PPacket packet) // Set a setting to all connected Camera
         {
             // Read a setting from a packet and try to set it
-            try
+            Console.WriteLine("[Command Thread] Executing command...");
+            for (int i = 0; i < CameraList.Count; i++)
             {
-                switch (packet.SettingType)
+                Console.WriteLine($"[Command Thread]({i}) Camera: {CameraList[i].Name}");
+                try
                 {
-                    case PDataType.Aperture:
-                        foreach (Camera camera in CameraList)
-                            await camera.SetApertureAsync((double)packet.Data);
-                        break;
-                    case PDataType.ISO:
-                        foreach (Camera camera in CameraList)
-                            await camera.SetIsoSpeedAsync(int.Parse(packet.Data.ToString()));
-                        break;
-                    case PDataType.Picture:
-                        foreach (Camera camera in CameraList)
-                            await camera.CaptureImageAsync();
-                        break;
-                    case PDataType.ShutterSpeed:
-                        foreach (Camera camera in CameraList)
-                            await camera.SetShutterSpeedAsync(new ShutterSpeed((string)packet.Data));
-                        break;
+                    switch (packet.SettingType)
+                    {
+                        case PDataType.Picture:
+                            await CameraList[i].CaptureImageAsync();
+                            break;
+                        case PDataType.Aperture:
+                            await CameraList[i].SetApertureAsync((double)packet.Data);
+                            break;
+                        case PDataType.ISO:
+                            await CameraList[i].SetIsoSpeedAsync(int.Parse(packet.Data.ToString()));
+                            break;
+                        case PDataType.ShutterSpeed:
+                            await CameraList[i].SetShutterSpeedAsync(new ShutterSpeed((string)packet.Data));
+                            break;
+                    }
+                    Console.WriteLine($"[Command Thread]({i}) Sucessful execution.");
                 }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("[Client Thread] Invalid setting " + e.Message);
+                catch (Exception e)
+                {
+                    // The setting is incorect
+                    if (i == 0)
+                    {
+                        Console.WriteLine($"[Command Thread]({i}) Invalid setting: " + e.Message);
+                        break;
+                    }
+                    else
+                    {
+                        // Check if the camera is disconnected
+                        if (packet.SettingType == PDataType.Picture)
+                        {
+                            Console.WriteLine($"[Command Thread] {CameraList[i].Name} disconnected...");
+                            CameraList.RemoveAt(i);
+                        }
+                        Console.WriteLine($"[Command Thread] Command is not supported by {CameraList[i].Name}");
+                    }
+
+                }
             }
         }
     }
@@ -200,15 +223,15 @@ namespace PRemote.Server
 
         public int GetHashCode(Camera obj)
         {
-            string hashCode = "";
+            int hashCode = 0;
 
             foreach (char chr in obj.Name)
-                hashCode += (int)chr;
+                hashCode += chr;
 
             foreach (char chr in obj.Port)
-                hashCode += (int)chr;
+                hashCode += chr;
 
-            return int.Parse(hashCode);
+            return hashCode;
         }
     }
 }

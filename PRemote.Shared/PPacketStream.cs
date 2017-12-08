@@ -10,9 +10,9 @@ using System.Linq;
 namespace PRemote.Shared
 {
     /// <summary>
-    /// Used to send <see cref="PPacket"/> through <see cref="System.Net.Sockets.NetworkStream"/>
+    /// Used to send <see cref="object"/> through <see cref="System.Net.Sockets.NetworkStream"/>
     /// </summary>
-    public class PPacketStream : INetworkStreamManager<PPacket>
+    public class PacketStream : INetworkStreamManager
     {
         /// <summary>
         /// The used <see cref="System.Net.Sockets.NetworkStream"/>
@@ -23,13 +23,13 @@ namespace PRemote.Shared
         /// Construct from an existing stream
         /// </summary>
         /// <param name="networkStream">A connected <see cref="System.Net.Sockets.NetworkStream"/></param>
-        public PPacketStream(NetworkStream networkStream) => NetworkStream = networkStream;
+        public PacketStream(NetworkStream networkStream) => NetworkStream = networkStream;
 
         /// <summary>
-        /// Receive one <see cref="PPacket"/>
+        /// Receive one <see cref="object"/>
         /// </summary>
         /// <returns></returns>
-        public PPacket Receive()
+        public T Receive<T>()
         {
             // Declarations
             int size;
@@ -54,36 +54,36 @@ namespace PRemote.Shared
                 position += receivedBytes;
             }
 
-            return MessagePackSerializer.Deserialize<PPacket>(data);
+            return MessagePackSerializer.Deserialize<T>(data);
         }
         /// <summary>
-        /// Receive multiples <see cref="PPacket"/>
+        /// Receive multiples <see cref="object"/>
         /// </summary>
-        /// <param name="number">The number of <see cref="PPacket"/> to receive</param>
+        /// <param name="number">The number of <see cref="object"/> to receive</param>
         /// <exception cref="ArgumentOutOfRangeException" />
         /// <returns></returns>
-        public PPacket[] Receive(int number)
+        public T[] Receive<T>(int number)
         {
             if (number < 1)
             {
-                throw new ArgumentOutOfRangeException("number", "can't receive less than 1 PPacket");
+                throw new ArgumentOutOfRangeException("number", "can't receive less than 1 T");
             }
 
-            PPacket[] arr = new PPacket[number];
+            T[] arr = new T[number];
 
             for (int i = 0; i < number; i++)
             {
-                arr[i] = Receive();
+                arr[i] = Receive<T>();
             }
 
             return arr;
         }
 
         /// <summary>
-        /// Receive one <see cref="PPacket"/> async
+        /// Receive one <see cref="object"/> async
         /// </summary>
         /// <returns></returns>
-        public async Task<PPacket> ReceiveAsync()
+        public async Task<T> ReceiveAsync<T>()
         {
             // Declarations
             int size;
@@ -108,36 +108,36 @@ namespace PRemote.Shared
                 position += leftBytes;
             }
 
-            return MessagePackSerializer.Deserialize<PPacket>(data);
+            return MessagePackSerializer.Deserialize<T>(data);
         }
         /// <summary>
-        /// Receive multiples <see cref="PPacket"/> async
+        /// Receive multiples <see cref="object"/> async
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException" />
-        /// <param name="number">The number of <see cref="PPacket"/> to receive</param>
+        /// <param name="number">The number of <see cref="object"/> to receive</param>
         /// <returns></returns>
-        public async Task<PPacket[]> ReceiveAsync(int number)
+        public async Task<T[]> ReceiveAsync<T>(int number)
         {
             if (number < 1)
             {
-                throw new ArgumentOutOfRangeException("number", "can't receive less than 1 PPacket");
+                throw new ArgumentOutOfRangeException("number", "can't receive less than 1 T");
             }
 
-            PPacket[] arr = new PPacket[number];
+            T[] arr = new T[number];
 
             for (int i = 0; i < number; i++)
             {
-                arr[i] = await ReceiveAsync();
+                arr[i] = await ReceiveAsync<T>();
             }
 
             return arr;
         }
 
         /// <summary>
-        /// Send one <see cref="PPacket"/>
+        /// Send one <see cref="object"/>
         /// </summary>
-        /// <param name="obj">The <see cref="PPacket"/> to send</param>
-        public void Send(PPacket obj)
+        /// <param name="obj">The <see cref="object"/> to send</param>
+        public void Send<T>(T obj)
         {
             // Declarations
             int size;
@@ -164,23 +164,23 @@ namespace PRemote.Shared
             }
         }
         /// <summary>
-        /// Send multiples <see cref="PPacket"/>
+        /// Send multiples <see cref="object"/>
         /// </summary>
-        /// <param name="obj">The <see cref="PPacket"/> to send</param>
-        public void Send(params PPacket[] obj)
+        /// <param name="obj">The <see cref="object"/> to send</param>
+        public void Send<T>(params T[] obj)
         {
-            foreach (PPacket packet in obj)
+            foreach (T packet in obj)
             {
                 Send(packet);
             }
         }
 
         /// <summary>
-        /// Send one <see cref="PPacket"/> async
+        /// Send one <see cref="object"/> async
         /// </summary>
-        /// <param name="obj">The <see cref="PPacket"/> to send</param>
+        /// <param name="obj">The <see cref="object"/> to send</param>
         /// <returns></returns>
-        public async Task SendAsync(PPacket obj)
+        public async Task SendAsync<T>(T obj)
         {
             // Declarations
             int size;
@@ -207,13 +207,13 @@ namespace PRemote.Shared
             }
         }
         /// <summary>
-        /// Send multiple <see cref="PPacket"/> async
+        /// Send multiples <see cref="object"/> async
         /// </summary>
-        /// <param name="obj">The <see cref="PPacket"/> to send</param>
+        /// <param name="obj">The <see cref="object"/> to send</param>
         /// <returns></returns>
-        public async Task SendAsync(params PPacket[] obj)
+        public async Task SendAsync<T>(params T[] obj)
         {
-            foreach(PPacket packet in obj)
+            foreach(T packet in obj)
             {
                 await SendAsync(packet);
             }

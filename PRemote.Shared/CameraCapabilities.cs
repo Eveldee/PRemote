@@ -10,7 +10,7 @@ namespace PRemote.Shared
     /// Represent capabilities of a camera
     /// </summary>
     [MessagePackObject]
-    public struct CameraCapabilities
+    public class CameraCapabilities
     {
         [Key(0)]
         public string Name { get; }
@@ -70,6 +70,13 @@ namespace PRemote.Shared
             SupportedIsoSpeeds = isoSpeeds;
             SupportedShutterSpeeds = shutterSpeeds;
         }
+
+        //public static CameraCapabilities FromObjectArray(object[] capabilities)
+        //{
+        //    return new CameraCapabilities((string)capabilities[0], (string)capabilities[1], (bool)capabilities[2], (bool)capabilities[3],
+        //        (double)capabilities[4], (int)capabilities[5], (string)capabilities[6],
+        //        (double[])capabilities[7], (int[])capabilities[8], (string[])capabilities[9]);
+        //}
 
     }
 }
