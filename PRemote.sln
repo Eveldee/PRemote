@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2009
+VisualStudioVersion = 15.0.27130.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PRemote.Shared", "PRemote.Shared\PRemote.Shared.csproj", "{2F86819E-77D7-496B-8C20-86D221086DD5}"
 EndProject
@@ -40,6 +40,12 @@ Global
 		Debug|iPhoneSimulator = Debug|iPhoneSimulator
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Raspberry|Any CPU = Raspberry|Any CPU
+		Raspberry|ARM = Raspberry|ARM
+		Raspberry|iPhone = Raspberry|iPhone
+		Raspberry|iPhoneSimulator = Raspberry|iPhoneSimulator
+		Raspberry|x64 = Raspberry|x64
+		Raspberry|x86 = Raspberry|x86
 		Release|Any CPU = Release|Any CPU
 		Release|ARM = Release|ARM
 		Release|iPhone = Release|iPhone
@@ -84,6 +90,18 @@ Global
 		{2F86819E-77D7-496B-8C20-86D221086DD5}.Debug|x64.Build.0 = Debug|Any CPU
 		{2F86819E-77D7-496B-8C20-86D221086DD5}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{2F86819E-77D7-496B-8C20-86D221086DD5}.Debug|x86.Build.0 = Debug|Any CPU
+		{2F86819E-77D7-496B-8C20-86D221086DD5}.Raspberry|Any CPU.ActiveCfg = Raspberry|Any CPU
+		{2F86819E-77D7-496B-8C20-86D221086DD5}.Raspberry|Any CPU.Build.0 = Raspberry|Any CPU
+		{2F86819E-77D7-496B-8C20-86D221086DD5}.Raspberry|ARM.ActiveCfg = Raspberry|Any CPU
+		{2F86819E-77D7-496B-8C20-86D221086DD5}.Raspberry|ARM.Build.0 = Raspberry|Any CPU
+		{2F86819E-77D7-496B-8C20-86D221086DD5}.Raspberry|iPhone.ActiveCfg = Raspberry|Any CPU
+		{2F86819E-77D7-496B-8C20-86D221086DD5}.Raspberry|iPhone.Build.0 = Raspberry|Any CPU
+		{2F86819E-77D7-496B-8C20-86D221086DD5}.Raspberry|iPhoneSimulator.ActiveCfg = Raspberry|Any CPU
+		{2F86819E-77D7-496B-8C20-86D221086DD5}.Raspberry|iPhoneSimulator.Build.0 = Raspberry|Any CPU
+		{2F86819E-77D7-496B-8C20-86D221086DD5}.Raspberry|x64.ActiveCfg = Raspberry|Any CPU
+		{2F86819E-77D7-496B-8C20-86D221086DD5}.Raspberry|x64.Build.0 = Raspberry|Any CPU
+		{2F86819E-77D7-496B-8C20-86D221086DD5}.Raspberry|x86.ActiveCfg = Raspberry|Any CPU
+		{2F86819E-77D7-496B-8C20-86D221086DD5}.Raspberry|x86.Build.0 = Raspberry|Any CPU
 		{2F86819E-77D7-496B-8C20-86D221086DD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F86819E-77D7-496B-8C20-86D221086DD5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2F86819E-77D7-496B-8C20-86D221086DD5}.Release|ARM.ActiveCfg = Release|Any CPU
@@ -132,6 +150,18 @@ Global
 		{AF42D070-910B-41B7-B7AE-7A1F16356BD3}.Debug|x64.Build.0 = Debug|Any CPU
 		{AF42D070-910B-41B7-B7AE-7A1F16356BD3}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{AF42D070-910B-41B7-B7AE-7A1F16356BD3}.Debug|x86.Build.0 = Debug|Any CPU
+		{AF42D070-910B-41B7-B7AE-7A1F16356BD3}.Raspberry|Any CPU.ActiveCfg = Raspberry|Any CPU
+		{AF42D070-910B-41B7-B7AE-7A1F16356BD3}.Raspberry|Any CPU.Build.0 = Raspberry|Any CPU
+		{AF42D070-910B-41B7-B7AE-7A1F16356BD3}.Raspberry|ARM.ActiveCfg = Raspberry|Any CPU
+		{AF42D070-910B-41B7-B7AE-7A1F16356BD3}.Raspberry|ARM.Build.0 = Raspberry|Any CPU
+		{AF42D070-910B-41B7-B7AE-7A1F16356BD3}.Raspberry|iPhone.ActiveCfg = Raspberry|Any CPU
+		{AF42D070-910B-41B7-B7AE-7A1F16356BD3}.Raspberry|iPhone.Build.0 = Raspberry|Any CPU
+		{AF42D070-910B-41B7-B7AE-7A1F16356BD3}.Raspberry|iPhoneSimulator.ActiveCfg = Raspberry|Any CPU
+		{AF42D070-910B-41B7-B7AE-7A1F16356BD3}.Raspberry|iPhoneSimulator.Build.0 = Raspberry|Any CPU
+		{AF42D070-910B-41B7-B7AE-7A1F16356BD3}.Raspberry|x64.ActiveCfg = Raspberry|Any CPU
+		{AF42D070-910B-41B7-B7AE-7A1F16356BD3}.Raspberry|x64.Build.0 = Raspberry|Any CPU
+		{AF42D070-910B-41B7-B7AE-7A1F16356BD3}.Raspberry|x86.ActiveCfg = Raspberry|Any CPU
+		{AF42D070-910B-41B7-B7AE-7A1F16356BD3}.Raspberry|x86.Build.0 = Raspberry|Any CPU
 		{AF42D070-910B-41B7-B7AE-7A1F16356BD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF42D070-910B-41B7-B7AE-7A1F16356BD3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AF42D070-910B-41B7-B7AE-7A1F16356BD3}.Release|ARM.ActiveCfg = Release|Any CPU
@@ -180,6 +210,18 @@ Global
 		{ADFC3B6A-25F9-43A5-AF76-ADF6EE9F4BD2}.Debug|x64.Build.0 = Debug|Any CPU
 		{ADFC3B6A-25F9-43A5-AF76-ADF6EE9F4BD2}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{ADFC3B6A-25F9-43A5-AF76-ADF6EE9F4BD2}.Debug|x86.Build.0 = Debug|Any CPU
+		{ADFC3B6A-25F9-43A5-AF76-ADF6EE9F4BD2}.Raspberry|Any CPU.ActiveCfg = Raspberry|Any CPU
+		{ADFC3B6A-25F9-43A5-AF76-ADF6EE9F4BD2}.Raspberry|Any CPU.Build.0 = Raspberry|Any CPU
+		{ADFC3B6A-25F9-43A5-AF76-ADF6EE9F4BD2}.Raspberry|ARM.ActiveCfg = Raspberry|Any CPU
+		{ADFC3B6A-25F9-43A5-AF76-ADF6EE9F4BD2}.Raspberry|ARM.Build.0 = Raspberry|Any CPU
+		{ADFC3B6A-25F9-43A5-AF76-ADF6EE9F4BD2}.Raspberry|iPhone.ActiveCfg = Raspberry|Any CPU
+		{ADFC3B6A-25F9-43A5-AF76-ADF6EE9F4BD2}.Raspberry|iPhone.Build.0 = Raspberry|Any CPU
+		{ADFC3B6A-25F9-43A5-AF76-ADF6EE9F4BD2}.Raspberry|iPhoneSimulator.ActiveCfg = Raspberry|Any CPU
+		{ADFC3B6A-25F9-43A5-AF76-ADF6EE9F4BD2}.Raspberry|iPhoneSimulator.Build.0 = Raspberry|Any CPU
+		{ADFC3B6A-25F9-43A5-AF76-ADF6EE9F4BD2}.Raspberry|x64.ActiveCfg = Raspberry|Any CPU
+		{ADFC3B6A-25F9-43A5-AF76-ADF6EE9F4BD2}.Raspberry|x64.Build.0 = Raspberry|Any CPU
+		{ADFC3B6A-25F9-43A5-AF76-ADF6EE9F4BD2}.Raspberry|x86.ActiveCfg = Raspberry|Any CPU
+		{ADFC3B6A-25F9-43A5-AF76-ADF6EE9F4BD2}.Raspberry|x86.Build.0 = Raspberry|Any CPU
 		{ADFC3B6A-25F9-43A5-AF76-ADF6EE9F4BD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ADFC3B6A-25F9-43A5-AF76-ADF6EE9F4BD2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ADFC3B6A-25F9-43A5-AF76-ADF6EE9F4BD2}.Release|ARM.ActiveCfg = Release|Any CPU
@@ -246,6 +288,24 @@ Global
 		{69A8CCA3-F82D-4C67-9258-EA17F4E27480}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{69A8CCA3-F82D-4C67-9258-EA17F4E27480}.Debug|x86.Build.0 = Debug|Any CPU
 		{69A8CCA3-F82D-4C67-9258-EA17F4E27480}.Debug|x86.Deploy.0 = Debug|Any CPU
+		{69A8CCA3-F82D-4C67-9258-EA17F4E27480}.Raspberry|Any CPU.ActiveCfg = Raspberry|Any CPU
+		{69A8CCA3-F82D-4C67-9258-EA17F4E27480}.Raspberry|Any CPU.Build.0 = Raspberry|Any CPU
+		{69A8CCA3-F82D-4C67-9258-EA17F4E27480}.Raspberry|Any CPU.Deploy.0 = Raspberry|Any CPU
+		{69A8CCA3-F82D-4C67-9258-EA17F4E27480}.Raspberry|ARM.ActiveCfg = Raspberry|Any CPU
+		{69A8CCA3-F82D-4C67-9258-EA17F4E27480}.Raspberry|ARM.Build.0 = Raspberry|Any CPU
+		{69A8CCA3-F82D-4C67-9258-EA17F4E27480}.Raspberry|ARM.Deploy.0 = Raspberry|Any CPU
+		{69A8CCA3-F82D-4C67-9258-EA17F4E27480}.Raspberry|iPhone.ActiveCfg = Raspberry|Any CPU
+		{69A8CCA3-F82D-4C67-9258-EA17F4E27480}.Raspberry|iPhone.Build.0 = Raspberry|Any CPU
+		{69A8CCA3-F82D-4C67-9258-EA17F4E27480}.Raspberry|iPhone.Deploy.0 = Raspberry|Any CPU
+		{69A8CCA3-F82D-4C67-9258-EA17F4E27480}.Raspberry|iPhoneSimulator.ActiveCfg = Raspberry|Any CPU
+		{69A8CCA3-F82D-4C67-9258-EA17F4E27480}.Raspberry|iPhoneSimulator.Build.0 = Raspberry|Any CPU
+		{69A8CCA3-F82D-4C67-9258-EA17F4E27480}.Raspberry|iPhoneSimulator.Deploy.0 = Raspberry|Any CPU
+		{69A8CCA3-F82D-4C67-9258-EA17F4E27480}.Raspberry|x64.ActiveCfg = Raspberry|Any CPU
+		{69A8CCA3-F82D-4C67-9258-EA17F4E27480}.Raspberry|x64.Build.0 = Raspberry|Any CPU
+		{69A8CCA3-F82D-4C67-9258-EA17F4E27480}.Raspberry|x64.Deploy.0 = Raspberry|Any CPU
+		{69A8CCA3-F82D-4C67-9258-EA17F4E27480}.Raspberry|x86.ActiveCfg = Raspberry|Any CPU
+		{69A8CCA3-F82D-4C67-9258-EA17F4E27480}.Raspberry|x86.Build.0 = Raspberry|Any CPU
+		{69A8CCA3-F82D-4C67-9258-EA17F4E27480}.Raspberry|x86.Deploy.0 = Raspberry|Any CPU
 		{69A8CCA3-F82D-4C67-9258-EA17F4E27480}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69A8CCA3-F82D-4C67-9258-EA17F4E27480}.Release|Any CPU.Build.0 = Release|Any CPU
 		{69A8CCA3-F82D-4C67-9258-EA17F4E27480}.Release|Any CPU.Deploy.0 = Release|Any CPU

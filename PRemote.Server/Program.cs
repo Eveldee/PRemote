@@ -130,8 +130,15 @@ namespace PRemote.Server
                 Console.WriteLine("[TCP Thread] Capabilities sent");
 
                 // Start Transfer Thread
+                // Check for compile symbol
+                // Avoir a glitch with proc < 4 core
+#if RASPBERRY
                 Thread dataThread = new Thread(TransferThread);
                 dataThread.Start(packetStream);
+#else
+                TransferThread(packetStream);
+                break;
+#endif
             }
         }
 

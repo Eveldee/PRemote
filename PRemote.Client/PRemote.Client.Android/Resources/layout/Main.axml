@@ -30,7 +30,6 @@
         android:id="@+id/spr_ISO"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:theme="@android:style/Theme.Holo"
         android:layout_alignBottom="@id/txt_ISO"
         android:layout_toRightOf="@id/txt_ISO" />
 <!--Aperture Pick-->
@@ -47,7 +46,6 @@
         android:id="@+id/spr_Aperture"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:theme="@android:style/Theme.Holo"
         android:layout_alignBottom="@id/txt_Aperture"
         android:layout_toRightOf="@id/txt_Aperture" />
 <!--ShutterSpeed Pick-->
@@ -64,7 +62,6 @@
         android:id="@+id/spr_Shutter"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:theme="@android:style/Theme.Holo"
         android:layout_alignBottom="@id/txt_Shutter"
         android:layout_toRightOf="@id/txt_Shutter" />
 <!--Button-->
