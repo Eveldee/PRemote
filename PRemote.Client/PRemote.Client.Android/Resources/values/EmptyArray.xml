@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+    <string-array name="arr_Empty">
+        <item>N/A</item>
+        <item>Test</item>
+    </string-array>
+</resources>

@@ -30,8 +30,11 @@
         android:id="@+id/spr_ISO"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
+        android:theme="@android:style/Theme.Holo"
         android:layout_alignBottom="@id/txt_ISO"
-        android:layout_toRightOf="@id/txt_ISO" />
+        android:layout_toRightOf="@id/txt_ISO"
+        android:tag="ISO"
+        android:entries="@array/arr_Empty" />
 <!--Aperture Pick-->
     <TextView
         android:id="@+id/txt_Aperture"
@@ -46,8 +49,11 @@
         android:id="@+id/spr_Aperture"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
+        android:theme="@android:style/Theme.Holo"
         android:layout_alignBottom="@id/txt_Aperture"
-        android:layout_toRightOf="@id/txt_Aperture" />
+        android:layout_toRightOf="@id/txt_Aperture"
+        android:tag="Aperture"
+        android:entries="@array/arr_Empty" />
 <!--ShutterSpeed Pick-->
     <TextView
         android:id="@+id/txt_Shutter"
@@ -62,8 +68,11 @@
         android:id="@+id/spr_Shutter"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
+        android:theme="@android:style/Theme.Holo"
         android:layout_alignBottom="@id/txt_Shutter"
-        android:layout_toRightOf="@id/txt_Shutter" />
+        android:layout_toRightOf="@id/txt_Shutter"
+        android:tag="Shutter"
+        android:entries="@array/arr_Empty" />
 <!--Button-->
     <Button
         android:id="@+id/btn_Picture"

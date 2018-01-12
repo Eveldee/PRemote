@@ -131,7 +131,7 @@ namespace PRemote.Server
 
                 // Start Transfer Thread
                 // Check for compile symbol
-                // Avoir a glitch with proc < 4 core
+                // Avoir a glitch with some proc
 #if RASPBERRY
                 Thread dataThread = new Thread(TransferThread);
                 dataThread.Start(packetStream);
