@@ -99,6 +99,9 @@ namespace PRemote.Client.CLI
                     continue;
                 }
 
+                if (split[0] != "picture")
+                    arg = split[1];
+
                 switch (input.Split(' ')[0])
                 {
                     case "picture":

@@ -1,14 +1,14 @@
 ﻿using Android.App;
 using Android.Widget;
 using Android.OS;
-using System.Threading;
+using System;
+using System.Linq;
 using System.Net.Sockets;
 using System.Net;
+using System.Threading;
 
-using PRemote.Shared;
 using MessagePack;
-using System.Linq;
-using System;
+using PRemote.Shared;
 
 namespace PRemote.Client.Android
 {
@@ -28,6 +28,8 @@ namespace PRemote.Client.Android
 
         IPEndPoint _serverIp;
         PacketStream _packetStream;
+        CameraCapabilities _capabilities;
+        bool _connected = false;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -52,13 +54,17 @@ namespace PRemote.Client.Android
             btn_Picture.Click += Btn_Picture_Click;
             btn_Vocal.Click += Btn_Vocal_Click;
 
-            //Thread t = new Thread(UDP_Thread);
-            //t.Start();
+            UDP_Thread();
         }
 
-        private void Spr_Change(object sender, AdapterView.ItemSelectedEventArgs e)
+        private async void Spr_Change(object sender, AdapterView.ItemSelectedEventArgs e)
         {
-            throw new NotImplementedException();
+            if (_connected)
+            {
+                await _packetStream.SendAsync(new PPacket(PDataType.ISO, (int)spr_ISO.SelectedItem));
+                await _packetStream.SendAsync(new PPacket(PDataType.Aperture, (double)spr_Aperture.SelectedItem));
+                await _packetStream.SendAsync(new PPacket(PDataType.ShutterSpeed, (string)spr_Shutter.SelectedItem));
+            }
         }
 
         private void Btn_Vocal_Click(object sender, EventArgs e)
@@ -66,14 +72,39 @@ namespace PRemote.Client.Android
             throw new NotImplementedException();
         }
 
-        private void Btn_Picture_Click(object sender, EventArgs e)
+        // Take a picture
+        private async void Btn_Picture_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            if (_connected)
+            {
+                await _packetStream.SendAsync(new PPacket(PDataType.Picture, 0));
+            }
         }
 
         // Receive UDP broadcast to get discovered IP
         private void UDP_Thread()
         {
+            // Set up a new client
+            var udpClient = new UdpClient(PConnection.UDPPort)
+            {
+                EnableBroadcast = true
+            };
+
+            var ip = new IPEndPoint(IPAddress.Any, PConnection.UDPPort);
+
+            // Check broadcast packets
+            do
+            {
+                byte[] data = udpClient.Receive(ref ip);
+
+                if (data.SequenceEqual(PConnection.UDPPacketData))
+                    _serverIp = ip;
+
+            } while (_serverIp == null);
+
+            // Set state:
+            txt_State.Text = $"Connecté: {_serverIp.ToString()}";
+
             //Tcp connection
             TCP_Connection();
         }
@@ -81,7 +112,20 @@ namespace PRemote.Client.Android
         // Connect to server
         private void TCP_Connection()
         {
+            // Connect to server
+            var tcpClient = new TcpClient(_serverIp.Address.ToString(), PConnection.TCPPort);
 
+            // Get the stream
+            _packetStream = new PacketStream(tcpClient.GetStream());
+
+            // Receive and display capabilities
+            _capabilities = _packetStream.Receive<CameraCapabilities>();
+
+            spr_ISO.Adapter = new ArrayAdapter(this, global::Android.Resource.Layout.SimpleListItem1, _capabilities.SupportedIsoSpeeds);
+            spr_Aperture.Adapter = new ArrayAdapter(this, global::Android.Resource.Layout.SimpleListItem1, _capabilities.SupportedApertures);
+            spr_Shutter.Adapter = new ArrayAdapter(this, global::Android.Resource.Layout.SimpleListItem1, _capabilities.SupportedShutterSpeeds);
+
+            _connected = true;
         }
     }
 }
