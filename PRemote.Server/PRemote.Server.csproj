@@ -8,7 +8,7 @@
     <Company>Ilyx</Company>
     <Product>PRemote</Product>
     <Description>Remote control a Camera</Description>
-    <Copyright>Eveldee /Ilyx © 2018</Copyright>
+    <Copyright>Ilyx/Eveldee © 2018</Copyright>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Raspberry|AnyCPU'">
