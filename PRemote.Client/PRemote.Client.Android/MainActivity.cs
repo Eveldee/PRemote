@@ -53,7 +53,13 @@ namespace PRemote.Client.Android
 
             btn_Picture.Click += Btn_Picture_Click;
             btn_Vocal.Click += Btn_Vocal_Click;
+        }
 
+        protected override void OnResume()
+        {
+            base.OnResume();
+
+            // Start UDP search when the activity is visible
             UDP_Thread();
         }
 
