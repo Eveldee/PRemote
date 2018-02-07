@@ -180,6 +180,7 @@ namespace PRemote.Server
                     switch (packet.SettingType)
                     {
                         case PDataType.Picture:
+                            await Task.Delay((int)packet.Data * 1000);
                             await CameraList[i].CaptureImageAsync();
                             break;
                         case PDataType.Aperture:

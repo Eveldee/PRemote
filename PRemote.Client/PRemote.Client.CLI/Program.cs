@@ -93,20 +93,19 @@ namespace PRemote.Client.CLI
                 string[] split = input.Split(' ');
 
                 // Check invalid command
-                if ((split.Length < 1) || (split.Length < 2 && split[0] != "picture"))
+                if (split.Length < 1)
                 {
                     Console.WriteLine("Invalid command");
                     continue;
                 }
 
-                if (split[0] != "picture")
-                    arg = split[1];
+                arg = split[1];
 
                 switch (input.Split(' ')[0])
                 {
                     case "picture":
                         pDataType = PDataType.Picture;
-                        value = "";
+                        value = int.Parse(arg);
                         break;
                     case "iso":
                         pDataType = PDataType.ISO;
