@@ -4,6 +4,11 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <Configurations>Debug;Release;Raspberry</Configurations>
+    <Authors>Eveldee</Authors>
+    <Company>Ilyx</Company>
+    <Product>PRemote</Product>
+    <Description>Remote control a Camera</Description>
+    <Copyright>Eveldee /Ilyx © 2018</Copyright>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Raspberry|AnyCPU'">
