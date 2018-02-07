@@ -9,6 +9,9 @@ using System.Threading;
 
 using MessagePack;
 using PRemote.Shared;
+using Android.Content;
+using Android.Speech;
+using Android.Runtime;
 
 namespace PRemote.Client.Android
 {
@@ -18,6 +21,11 @@ namespace PRemote.Client.Android
     [Activity(Label = "PRemote", MainLauncher = true, Theme = "@android:style/Theme.Material")]
     public class MainActivity : Activity
     {
+        readonly string[] pictureVoiceCommand = { "photo", "photos", "captur", "capture", "capturer", "déclenche", "déclencher" };
+        readonly string[] isoVoiceCommand = { "iso", "ISO" };
+
+        const int SpeechToText = 0x45a2f3;
+
         TextView txt_State;
         ImageView img_State;
         Spinner spr_ISO;
@@ -53,6 +61,15 @@ namespace PRemote.Client.Android
 
             btn_Picture.Click += Btn_Picture_Click;
             btn_Vocal.Click += Btn_Vocal_Click;
+
+            // Check if there is a microphone
+            string rec = global::Android.Content.PM.PackageManager.FeatureMicrophone;
+            if (rec != "android.hardware.microphone")
+            {
+                Toast.MakeText(this, "You don't have a microphone\nvoice commands disabled", ToastLength.Long).Show();
+
+                btn_Vocal.Click -= Btn_Vocal_Click;
+            }
         }
 
         protected override void OnResume()
@@ -75,7 +92,57 @@ namespace PRemote.Client.Android
 
         private void Btn_Vocal_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            StartSpeechToText();
+        }
+
+        protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
+        {
+            // SpeechToText Intent
+            if (_connected && requestCode == SpeechToText && resultCode == Result.Ok)
+            {
+                // Result
+                var matches = data.GetStringArrayListExtra(RecognizerIntent.ExtraResults);
+                string command;
+                int value;
+
+                for (int i = 0; i < matches.Count; i++)
+                {
+                    command = matches[i];
+                    value = 0;
+                    if (i + 1 < matches.Count)
+                        int.TryParse(matches[i + 1], out value);
+
+                    // If this is a picture command
+                    if (pictureVoiceCommand.Contains(command.ToLower()))
+                    {
+                        _packetStream.Send(new PPacket(PDataType.Picture, value));
+                    }
+                    // If this is an ISO command
+                    else if (isoVoiceCommand.Contains(command))
+                    {
+                        if (value == 0)
+                            continue;
+
+                        _packetStream.Send(new PPacket(PDataType.ISO, value));
+                    }
+                }
+            }
+
+            base.OnActivityResult(requestCode, resultCode, data);
+        }
+
+        // Start the SpeechToText Intent
+        private void StartSpeechToText()
+        {
+            var voiceIntent = new Intent(RecognizerIntent.ActionRecognizeSpeech);
+            voiceIntent.PutExtra(RecognizerIntent.ExtraLanguageModel, RecognizerIntent.LanguageModelFreeForm);
+            voiceIntent.PutExtra(RecognizerIntent.ExtraPrompt, "Say a command");
+            voiceIntent.PutExtra(RecognizerIntent.ExtraSpeechInputCompleteSilenceLengthMillis, 1000);
+            voiceIntent.PutExtra(RecognizerIntent.ExtraSpeechInputPossiblyCompleteSilenceLengthMillis, 1000);
+            voiceIntent.PutExtra(RecognizerIntent.ExtraSpeechInputMinimumLengthMillis, 0);
+            voiceIntent.PutExtra(RecognizerIntent.ExtraMaxResults, 1);
+            voiceIntent.PutExtra(RecognizerIntent.ExtraLanguage, Java.Util.Locale.Default);
+            StartActivityForResult(voiceIntent, SpeechToText);
         }
 
         // Take a picture
