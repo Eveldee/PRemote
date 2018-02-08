@@ -12,6 +12,7 @@ using PRemote.Shared;
 using Android.Content;
 using Android.Speech;
 using Android.Runtime;
+using System.Collections.Generic;
 
 namespace PRemote.Client.Android
 {
@@ -70,13 +71,7 @@ namespace PRemote.Client.Android
 
                 btn_Vocal.Click -= Btn_Vocal_Click;
             }
-        }
 
-        protected override void OnResume()
-        {
-            base.OnResume();
-
-            // Start UDP search when the activity is visible
             UDP_Thread();
         }
 
@@ -97,19 +92,37 @@ namespace PRemote.Client.Android
 
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
         {
+            // Split the result into words
+            string[] GetWords(IList<string> entries)
+            {
+                var words = new List<string>();
+
+                foreach (string line in entries)
+                {
+                    foreach (string word in line.Split(' '))
+                    {
+                        words.Add(word);
+                    }
+                }
+
+                return words.ToArray();
+            }
+
             // SpeechToText Intent
             if (_connected && requestCode == SpeechToText && resultCode == Result.Ok)
             {
                 // Result
-                var matches = data.GetStringArrayListExtra(RecognizerIntent.ExtraResults);
+                var matches = GetWords(data.GetStringArrayListExtra(RecognizerIntent.ExtraResults));
                 string command;
                 int value;
 
-                for (int i = 0; i < matches.Count; i++)
+                Toast.MakeText(this, string.Join(" ", matches), ToastLength.Long).Show();
+
+                for (int i = 0; i < matches.Length; i++)
                 {
                     command = matches[i];
                     value = 0;
-                    if (i + 1 < matches.Count)
+                    if (i + 1 < matches.Length)
                         int.TryParse(matches[i + 1], out value);
 
                     // If this is a picture command
@@ -137,8 +150,8 @@ namespace PRemote.Client.Android
             var voiceIntent = new Intent(RecognizerIntent.ActionRecognizeSpeech);
             voiceIntent.PutExtra(RecognizerIntent.ExtraLanguageModel, RecognizerIntent.LanguageModelFreeForm);
             voiceIntent.PutExtra(RecognizerIntent.ExtraPrompt, "Say a command");
-            voiceIntent.PutExtra(RecognizerIntent.ExtraSpeechInputCompleteSilenceLengthMillis, 1000);
-            voiceIntent.PutExtra(RecognizerIntent.ExtraSpeechInputPossiblyCompleteSilenceLengthMillis, 1000);
+            voiceIntent.PutExtra(RecognizerIntent.ExtraSpeechInputCompleteSilenceLengthMillis, 1500);
+            voiceIntent.PutExtra(RecognizerIntent.ExtraSpeechInputPossiblyCompleteSilenceLengthMillis, 1500);
             voiceIntent.PutExtra(RecognizerIntent.ExtraSpeechInputMinimumLengthMillis, 0);
             voiceIntent.PutExtra(RecognizerIntent.ExtraMaxResults, 1);
             voiceIntent.PutExtra(RecognizerIntent.ExtraLanguage, Java.Util.Locale.Default);
