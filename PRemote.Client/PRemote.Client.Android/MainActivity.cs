@@ -79,9 +79,11 @@ namespace PRemote.Client.Android
         {
             if (_connected)
             {
-                await _packetStream.SendAsync(new PPacket(PDataType.ISO, (int)spr_ISO.SelectedItem));
-                await _packetStream.SendAsync(new PPacket(PDataType.Aperture, (double)spr_Aperture.SelectedItem));
-                await _packetStream.SendAsync(new PPacket(PDataType.ShutterSpeed, (string)spr_Shutter.SelectedItem));
+                // Don't work for now
+            
+                // await _packetStream.SendAsync(new PPacket(PDataType.ISO, (int)spr_ISO.SelectedItem));
+                // await _packetStream.SendAsync(new PPacket(PDataType.Aperture, (double)spr_Aperture.SelectedItem));
+                // await _packetStream.SendAsync(new PPacket(PDataType.ShutterSpeed, (string)spr_Shutter.SelectedItem));
             }
         }
 
